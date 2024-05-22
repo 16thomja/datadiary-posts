@@ -11,9 +11,10 @@ visualization features at my disposal.
 
 Let's inspect the following image:
 
-```typescript title="typescript"
-<Image filePath=''>
-```
+<Image 
+    src='https://upload.wikimedia.org/wikipedia/commons/f/f2/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
+    alt="Brachyscome iberidifolia"
+/>
 
 If you were asked to list the prominent colors in this image, how would you respond?
 At a minimum, I would identify:
@@ -26,7 +27,7 @@ Fundamentally, this image is an array of pixels. The color of each pixel is desc
 a combination of three integers, each in the range 0-255. You may know this as **RGB**
 color encoding. Pure black is encoded as (0,0,0) and pure white as (255,255,255).
 
-Knowing this, we can count the number of unique colors in this image by counting the
+Knowing this, we can determine the number of unique colors in this image by counting the
 number of unique RGB triplets:
 
 ```python title="python"
@@ -55,6 +56,6 @@ num_colors = len(np.unique(view))
 print(image_array_flat.shape, num_colors)
 ```
 
-This identifies **665,000** pixels with **141,862** unique colors!
+This reports 665,000 pixels with **141,862 unique colors**!
 
 <LazyPlot filePath='color-quantization/plotly_fig.json'/>
