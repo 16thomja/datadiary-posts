@@ -6,16 +6,16 @@ tags: ['clustering']
 
 To inaugurate this blog, I'd like to present a simple article involving a topic I've spent
 many months studying: **clustering**. While the application to color quantization is
-straightforward, I'm desparate to show off the fancy formatting/data visualization tools
-I included in this site.
+not complicated, I'm desperate to show off the fancy formatting and data visualization tools
+I've included in this site.
 
 Let's inspect the following image:
 
 <MdxImage 
     src='https://upload.wikimedia.org/wikipedia/commons/f/f2/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
+    alt="Brachyscome iberidifolia"
     width={1000}
     height={665}
-    alt="Brachyscome iberidifolia"
 />
 
 If you were asked to list the prominent colors in this image, how would you respond?
@@ -58,6 +58,11 @@ num_colors = len(np.unique(view))
 print(image_array_flat.shape, num_colors)
 ```
 
-This reports 665,000 pixels with **141,862 unique colors**!
+This reports 665,000 pixels with **141,862 unique colors**. That's a lot of data!
+What if we were operating under strict storage/bandwidth limitations? Could we
+devise a simple compression technique to reduce the size of this image while
+maintaining the original resolution? You already employed a clever strategy
+at the beginning of this article: reduce the diverse color space to a handful
+of prominent color groups.
 
 <LazyPlot filePath='color-quantization/plotly_fig.json'/>
