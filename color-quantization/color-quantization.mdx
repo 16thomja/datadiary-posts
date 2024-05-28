@@ -68,7 +68,15 @@ of prominent representative colors.
 ### K-Means Clustering
 
 How can we algorithmically identify the most faithful representatives of our color
-space? The prevailing solution is **K-Means clustering**.
+space? The prevailing solution is **K-Means clustering**. We start by choosing the
+number of colors to appear in our compressed image, *n*. We randomly cast out *n* points,
+called **centroids**, into the color space. Then, we repeatedly run the following two steps to guide
+the centroids to popular pockets of the space:
+
+1. Assign each point to the nearest centroid.
+2. Move each centroid to the **mean position** of the points that are currently assigned to it.
+
+The animation below shows three centroids gravitating to three natural clusters with this simple logic:
 
 <LazyPlot filePath='color-quantization/kmeans_animation.json'/>
 
