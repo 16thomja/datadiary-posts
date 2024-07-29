@@ -12,7 +12,7 @@ I've included in this site.
 Let's inspect the following image:
 
 <MdxImage 
-    src='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
+    filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
     alt="Brachyscome iberidifolia"
     maxWidth={1000}
 />
@@ -78,7 +78,7 @@ the centroids to popular pockets of the space:
 The animation below shows three centroids gravitating to three natural clusters with this simple logic:
 
 <MdxImage 
-    src='color-quantization/code/K-means_convergence.gif'
+    filePath='color-quantization/code/K-means_convergence.gif'
     alt="K-means convergence animation"
     maxWidth={512}
 />
@@ -100,5 +100,11 @@ quantized_image = Image.fromarray(quantized_image_array, 'RGB')
 
 quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'PNG')
 ```
+
+<MdxImage 
+    filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
+    alt="Brachyscome iberidifolia KMeans=3"
+    maxWidth={1000}
+/>
 
 <LazyPlot filePath='color-quantization/plotly_fig.json'/>
