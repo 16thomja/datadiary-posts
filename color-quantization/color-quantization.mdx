@@ -84,7 +84,7 @@ The animation below shows three centroids gravitating to three natural clusters 
 />
 
 Let's give this a try on our image. We configure K-Means with 3 centroids and iterate until convergence.
-We then replace the color of each pixel with the color of its cluster centroid:
+We then replace the color of each pixel with the color of the nearest centroid:
 
 ```python title="python"
 from sklearn.cluster import KMeans
@@ -107,4 +107,4 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
     maxWidth={1000}
 />
 
-<LazyPlot filePath='color-quantization/plotly_fig.json'/>
+<LazyPlot filePath='color-quantization/code/centroids_in_color_space.json'/>
