@@ -6,7 +6,7 @@ tags: ['clustering']
 
 To inaugurate this blog, I'd like to present a simple article involving a topic I've spent
 many months studying: **clustering**. While the application to color quantization is
-not complicated, I'm desperate to show off the fancy formatting and data visualization tools
+not complicated, it will serve as an excuse to show off the fancy formatting and data visualization tools
 I've included in this site.
 
 Let's inspect the following image:
@@ -38,13 +38,20 @@ from io import BytesIO
 import numpy as np
 
 url = 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
-response = requests.get(url)
+
+# Wikimedia requires a user agent
+headers = {
+    'User-Agent': 'DataDiary/0.1 (jared@datadiary.dev)'
+}
+response = requests.get(url, headers=headers)
 image = Image.open(BytesIO(response.content))
 image = image.convert('RGB')
 
 image_array = np.array(image)
+height = image_array.shape[0]
+width = image_array.shape[1]
 image_array_flat = image_array.flatten().reshape((
-    image_array.shape[0] * image_array.shape[1],
+    height * width,
     3
 ))
 
@@ -106,5 +113,8 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
     alt="Brachyscome iberidifolia KMeans=3"
     maxWidth={1000}
 />
+
+Not exactly worthy of a postcard... What happened here? We can visualize the final positions
+of the centroids in the 3D color space to better understand this result:
 
 <LazyPlot filePath='color-quantization/code/centroids_in_color_space.json'/>
