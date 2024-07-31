@@ -117,4 +117,62 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
 Not exactly worthy of a postcard. What happened here? We can visualize the final positions
 of the centroids in the color space to better understand this result:
 
+```python title="python"
+import plotly.graph_objects as go
+
+# sample 10k pixels to appear in the visual
+image_array_flat_sample = image_array_flat[np.random.choice(image_array_flat.shape[0], 10_000)]
+
+# plot pixels
+fig = go.Figure(data=[go.Scatter3d(
+    x=image_array_flat_sample[:, 0],
+    y=image_array_flat_sample[:, 1],
+    z=image_array_flat_sample[:, 2],
+    mode='markers',
+    marker=dict(
+        size=1.5,
+        color=[f'rgb({pixel[0]}, {pixel[1]}, {pixel[2]})' for pixel in image_array_flat_sample],
+        opacity=1.0,
+        line=dict(width=0)
+    ),
+    hovertemplate = '<b>R</b>: %{x}<br><b>G</b>: %{y}<br><b>B</b>: %{z}<extra></extra>',
+    showlegend=True,
+    name='pixels'
+)])
+
+# plot centroids
+fig.add_trace(go.Scatter3d(
+    x=centroids[:, 0],
+    y=centroids[:, 1],
+    z=centroids[:, 2],
+    mode='markers',
+    marker=dict(
+        size=8,
+        color=[f'rgb({centroid[0]}, {centroid[1]}, {centroid[2]})' for centroid in centroids],
+        opacity=1.0,
+        symbol='x',
+        line=dict(width=0)
+    ),
+    hovertemplate = '<b>R</b>: %{x}<br><b>G</b>: %{y}<br><b>B</b>: %{z}<extra></extra>',
+    showlegend=True,
+    name='centroids'
+))
+
+fig.update_layout(
+    uirevision='constant',
+    scene=dict(
+        xaxis=dict(title='R', showspikes=False, range=[0, 255]),
+        yaxis=dict(title='G', showspikes=False, range=[0, 255]),
+        zaxis=dict(title='B', showspikes=False, range=[0, 255])
+    ),
+    scene_aspectmode='manual', 
+    scene_aspectratio=dict(x=1, y=1, z=1)
+)
+
+with open('centroids_in_color_space.json', 'w') as outfile:
+    outfile.write(fig.to_json())
+```
+
+Use the legend on the right to toggle the pixel/centroid markers.
+
 <LazyPlot filePath='color-quantization/code/centroids_in_color_space.json'/>
