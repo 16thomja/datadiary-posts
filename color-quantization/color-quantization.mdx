@@ -74,7 +74,7 @@ of prominent representative colors.
 ### K-Means Clustering
 
 How can we algorithmically identify the most faithful representatives of our color
-space? The prevailing solution is **K-Means clustering**. We start by choosing the
+space? A simple solution is **K-Means clustering**. We start by choosing the
 number of colors to appear in our compressed image, *n*. We randomly cast out *n* points,
 called **centroids**, into the color space. Then, we repeatedly run the following two steps to guide
 the centroids to popular pockets of the space:
@@ -94,27 +94,46 @@ Let's give this a try on our image. We configure K-Means with 3 centroids and it
 We then replace the color of each pixel with the color of the nearest centroid:
 
 ```python title="python"
-from sklearn.cluster import KMeans
+def KMeans(X, n_clusters, max_iter=100, tol=1e-4):
+    # initialize centroids at positions of random pixels
+    centroids = X[np.random.choice(X.shape[0], n_clusters, replace=False)]
 
-kmeans = KMeans(n_clusters=3)
-labels = kmeans.fit_predict(image_array_flat)
-centroids = np.round(kmeans.cluster_centers_).astype('uint8')
+    for _ in range(max_iter):
+        # assign each pixel to the nearest centroid
+        distances = np.linalg.norm(X[:, np.newaxis] - centroids, axis=2)
+        labels = np.argmin(distances, axis=1)
 
+        # update each centroid to the mean of assigned pixels
+        new_centroids = np.array([X[labels == k].mean(axis=0) for k in range(n_clusters)])
+
+        # check for convergence
+        if np.all(np.linalg.norm(new_centroids - centroids, axis=1) < tol):
+            break
+
+        centroids = new_centroids
+
+    return centroids, labels
+
+n_clusters = 3
+centroids, labels = KMeans(image_array_flat, n_clusters)
+centroids = np.round(centroids)
+
+# replace pixels with representative centroids
 quantized_image_array_flat = centroids[labels]
-quantized_image_array = quantized_image_array_flat.reshape(image_array.shape)
 
-quantized_image = Image.fromarray(quantized_image_array, 'RGB')
+quantized_image_array = quantized_image_array_flat.reshape(image_array.shape)
+quantized_image = Image.fromarray(quantized_image_array.astype('uint8'), 'RGB')
 
 quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'PNG')
 ```
 
 <MdxImage 
     filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
-    alt="Brachyscome iberidifolia KMeans=3"
+    alt="Brachyscome iberidifolia k=3"
     maxWidth={1000}
 />
 
-Not exactly worthy of a postcard. What happened here? We can visualize the final positions
+A pale imitation. What happened here? We can visualize the final positions
 of the centroids in the color space to better understand this result:
 
 ```python title="python"
@@ -176,3 +195,15 @@ with open('centroids_in_color_space.json', 'w') as outfile:
 Use the legend on the right to toggle the pixel/centroid markers.
 
 <LazyPlot filePath='color-quantization/code/centroids_in_color_space.json'/>
+
+With only 3 centroids, it appears that some regions are left without an
+appropriate representative. Light violet and dark green are well-served, but notice
+the empty pocket of yellow. What if we try again with 10 centroids?
+
+<MdxImage 
+    filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
+    alt="Brachyscome iberidifolia k=10"
+    maxWidth={1000}
+/>
+
+Much better. Additional centroids will yield diminishing returns, so let's call this a victory.
