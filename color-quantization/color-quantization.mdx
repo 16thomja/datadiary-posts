@@ -12,9 +12,10 @@ I've included in this site.
 Let's inspect the following image:
 
 <MdxImage 
-    filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
+    filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
     alt="Brachyscome iberidifolia"
     maxWidth={1000}
+    attribution="https://upload.wikimedia.org/wikipedia/commons/f/f2/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg"
 />
 
 If you were asked to list the prominent colors in this image, how would you respond?
@@ -85,7 +86,7 @@ the centroids to popular pockets of the space:
 The animation below shows three centroids gravitating to three natural clusters with this simple logic:
 
 <MdxImage 
-    filePath='color-quantization/code/K-means_convergence.gif'
+    filePath='color-quantization/K-means_convergence.gif'
     alt="K-means convergence animation"
     maxWidth={512}
 />
@@ -128,7 +129,7 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
 ```
 
 <MdxImage 
-    filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
+    filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
     alt="Brachyscome iberidifolia k=3"
     maxWidth={1000}
 />
@@ -194,14 +195,14 @@ with open('centroids_in_color_space.json', 'w') as outfile:
 
 Use the legend on the right to toggle the pixel/centroid markers.
 
-<LazyPlot filePath='color-quantization/code/centroids_in_color_space.json'/>
+<LazyPlot filePath='color-quantization/centroids_in_color_space.json'/>
 
 With only 3 centroids, it appears that some regions are left without a close representative.
 Light violet and dark green are well-served, but notice the empty pocket of yellow.
 What if we try again with 10 centroids?
 
 <MdxImage 
-    filePath='color-quantization/code/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
+    filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
     alt="Brachyscome iberidifolia k=10"
     maxWidth={1000}
 />

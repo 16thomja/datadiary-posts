@@ -1,0 +1,62 @@
+---
+title: 'Bayesian Optimization for Vehicle Control'
+date: '2024-09-20'
+---
+
+I was looking for introductory material on Bayesian optimization and found this helpful paper: "A Tutorial
+on Bayesian Optimization of Expensive Cost Functions, with Application to Active User Modeling and
+Hierarchical Reinforcement Learning". Quite a mouthful. In it, the authors run an experiment where they train
+a virtual car to take a clean U-turn at a fixed speed using the following control network:
+
+[INSERT CONTROL NETWORK PICTURE]
+
+You can see how, at any given time, the car's throttle and steering are goverened by 3 measurements:
+
+1. The lateral distance between the car and the road, Y_err
+2. The angle between the car's heading and the the road direction, Omega_err
+3. The lateral velocity of the car relative to its own heading (a.k.a. "drift"), V_y
+
+These are filtered through a total of **15** weights (in combination with summation and tanh squashing) to
+produce two values in range (-1, 1). The goal is to come up with a set of weights that encourages the car to stay
+on the road without deviating too much from a fixed speed through the duration of the turn. Let's set up our
+own simulation and give this a try!
+
+### Background: Bayesian Optimization
+
+So, why do the authors propose this problem as a candidate for Bayesian optimization? Two reasons:
+
+1. We don't know the shape of the reward function a priori. We have to propose a set of weights, send the car
+through the U-turn, then calculate the reward at the end of the trial.
+2. The reward is expensive to evaluate. We can't afford to probe the entire 15-dimensional parameter space
+when each trial takes ~30s.
+
+Bayesian optimization introduces two constructs to address these challenges: the **surrogate function** and
+the **acquisition function**. The simplest way to explain their interplay is to walk through a demo of the
+optimization of just 1 parameter.
+
+Let's say we've already conducted 3 trials and plotted the reward values:
+
+[INSERT OPT DEMO 3 POINTS]
+
+Where should we conduct the next trial? We're blind to the function that generated these points. However, we can
+try to estimate the shape of the function in a manner that leverages the information we've gathered. This is
+where we apply the **surrogate function**:
+
+[INSERT OPT DEMO SURROGATE 1]
+
+This "function" is actually a **Gaussian Process** - a distribution over infinitely many functions. It's
+characterized by its mean (solid line) and covariance (transparent envelope). Notice how its mean passes
+directly through our observations and how its envelope grows as it enters uncharted territory. It
+essentially says: "We know, with very little uncertainty, the shape of the true function near the observed points.
+Beyond that, we apply a broad guess".
+
+Now, we have to decide where to conduct our next trial based on the surrogate. It predicts a low-uncertainty
+peak near the rightmost observation. However, the high-uncertainty region on the left has the **potential** to
+yield an even better reward. We need a mechanism to 
+
+Before we can measure anything, we need a simulation environment. You may have heard of the
+impressively-realistic vehicle physics simulator, BeamNG.drive. You may not be familiar with its
+research-oriented fork, BeamNG.tech. It comes with a host of neat features that make experimentation easier,
+but the one that will come in handy today is the Python API, BeamNGpy. Props to the developers for
+rescuing me from having to hack together LUA scripts.
+
