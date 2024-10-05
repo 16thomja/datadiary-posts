@@ -15,7 +15,7 @@ Let's inspect the following image:
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
     alt="Brachyscome iberidifolia"
     maxWidth={1000}
-    attribution="https://upload.wikimedia.org/wikipedia/commons/f/f2/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg"
+    attributionId={1}
 />
 
 If you were asked to list the prominent colors in this image, how would you respond?
@@ -130,7 +130,7 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
 
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
-    alt="Brachyscome iberidifolia k=3"
+    alt="Brachyscome iberidifolia after K-means quantization with 3 centroids"
     maxWidth={1000}
 />
 
@@ -203,8 +203,21 @@ What if we try again with 10 centroids?
 
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
-    alt="Brachyscome iberidifolia k=10"
+    alt="Brachyscome iberidifolia after K-means quantization with 10 centroids"
     maxWidth={1000}
 />
 
 Much better. Additional centroids will yield diminishing returns, so let's call this a victory.
+
+<ImageAttributionList
+    attributions={[
+        attributionId: 1,
+        title: "Brachyscome iberidifolia",
+        author: "David Stang",
+        source: "Wikimedia Commons",
+        sourceUrl: "https://commons.wikimedia.org/wiki/File:Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg",
+        license: "CC BY-SA 4.0",
+        licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+        modifications: "Cropped and resized",
+    ]}
+/>
