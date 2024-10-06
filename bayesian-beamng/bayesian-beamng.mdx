@@ -29,7 +29,7 @@ So, why do the authors propose this problem as a candidate for Bayesian optimiza
 1. We don't know the shape of the reward function a priori. We have to propose a set of weights, send the car
 through the U-turn, then calculate the reward at the end of the trial.
 2. The reward is expensive to evaluate. We can't afford to probe the entire 15-dimensional parameter space
-when each trial takes ~30s.
+when each trial requires a real-time simulation.
 
 Bayesian optimization introduces two constructs to address these challenges: the **surrogate function** and
 the **acquisition function**. The simplest way to explain their interplay is to walk through a demo of the
