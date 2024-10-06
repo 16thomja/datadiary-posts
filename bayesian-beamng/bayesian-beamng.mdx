@@ -9,7 +9,12 @@ Hierarchical Reinforcement Learning"](http://haikufactory.com/files/bayopt.pdf).
 the authors run an experiment where they train a virtual car to take a clean U-turn at a fixed speed using 
 the following control network:
 
-[INSERT CONTROL NETWORK PICTURE]
+<MdxImage 
+    filePath='bayesian-beamng/vehicle_control_network.jpg'
+    alt="Control network producing throttle and steering from physical measurements"
+    maxWidth={600}
+    title="Trajectory-following policy"
+/>
 
 You can see how, at any given time, the car's throttle and steering are goverened by 3 measurements:
 
