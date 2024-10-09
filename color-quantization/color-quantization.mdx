@@ -14,7 +14,8 @@ Let's inspect the following image:
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
     alt="Brachyscome iberidifolia"
-    maxWidth={1000}
+    originalWidth={1000}
+    originalHeight={665}
     attributionId={1}
     title="Brachyscome iberidifolia"
 />
@@ -89,7 +90,8 @@ The animation below shows three centroids gravitating to three natural clusters 
 <MdxImage 
     filePath='color-quantization/K-means_convergence.gif'
     alt="K-means convergence animation with 3 centroids"
-    maxWidth={512}
+    originalWidth={637}
+    originalHeight={619}
     attributionId={2}
     title="K-means convergence"
 />
@@ -134,7 +136,8 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
     alt="Brachyscome iberidifolia after K-means quantization with 3 centroids"
-    maxWidth={1000}
+    originalWidth={1000}
+    originalHeight={665}
 />
 
 A pale imitation. What happened here? We can visualize the final positions
@@ -197,7 +200,7 @@ with open('centroids_in_color_space.json', 'w') as outfile:
 ```
 
 Drag to rotate and scroll to zoom. Use the legend on the right to disable the pixel
-markers and reveal all of the centroids.
+markers and reveal the obscured centroids.
 
 <LazyPlot filePath='color-quantization/centroids_in_color_space.json'/>
 
@@ -208,7 +211,8 @@ What if we try again with 10 centroids?
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
     alt="Brachyscome iberidifolia after K-means quantization with 10 centroids"
-    maxWidth={1000}
+    originalWidth={1000}
+    originalHeight={665}
 />
 
 Much better. Additional centroids will yield diminishing returns, so let's call this a victory.
