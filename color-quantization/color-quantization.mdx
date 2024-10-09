@@ -14,8 +14,7 @@ Let's inspect the following image:
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
     alt="Brachyscome iberidifolia"
-    originalWidth={1000}
-    originalHeight={665}
+    maxWidth="1000px"
     attributionId={1}
     title="Brachyscome iberidifolia"
 />
@@ -90,9 +89,7 @@ The animation below shows three centroids gravitating to three natural clusters 
 <MdxImage 
     filePath='color-quantization/K-means_convergence.gif'
     alt="K-means convergence animation with 3 centroids"
-    maxWidth="512px"
-    originalWidth={637}
-    originalHeight={619}
+    maxWidth="637px"
     attributionId={2}
     title="K-means convergence"
 />
@@ -137,8 +134,7 @@ quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'P
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
     alt="Brachyscome iberidifolia after K-means quantization with 3 centroids"
-    originalWidth={1000}
-    originalHeight={665}
+    maxWidth="1000px"
 />
 
 A pale imitation. What happened here? We can visualize the final positions
@@ -212,8 +208,7 @@ What if we try again with 10 centroids?
 <MdxImage 
     filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
     alt="Brachyscome iberidifolia after K-means quantization with 10 centroids"
-    originalWidth={1000}
-    originalHeight={665}
+    maxWidth="1000px"
 />
 
 Much better. Additional centroids will yield diminishing returns, so let's call this a victory.
