@@ -43,15 +43,27 @@ Bayesian optimization introduces two constructs to address these challenges: the
 the **acquisition function**. The simplest way to explain their interplay is to walk through a demo of the
 optimization of just 1 parameter.
 
-Let's say we've already conducted 3 trials and plotted the reward values:
+Let's say we've already conducted 5 trials and plotted the reward values:
 
-[INSERT OPT DEMO 3 POINTS]
+<MdxImage 
+    filePath='bayesian-beamng/bayesopt_demo_points.png'
+    alt="Objective values for 5 sample parameter values"
+    maxWidth="833px"
+    originalWidth={833}
+    originalHeight={525}
+/>
 
 Where should we conduct the next trial? We're blind to the function that generated these points. However, we can
 try to estimate the shape of the function in a manner that leverages the information we've gathered. This is
 where we apply the **surrogate function**:
 
-[INSERT OPT DEMO SURROGATE 1]
+<MdxImage 
+    filePath='bayesian-beamng/bayesopt_demo_gp.png'
+    alt="Gaussian process for 5 sample parameter values"
+    maxWidth="833px"
+    originalWidth={833}
+    originalHeight={525}
+/>
 
 This "function" is actually a **Gaussian Process** - a distribution over infinitely many functions. It's
 characterized by its mean (solid line) and covariance (transparent envelope). Notice how its mean passes
@@ -63,17 +75,16 @@ Now, we have to decide where to conduct our next trial based on the surrogate. I
 peak near the rightmost observation. However, the high-uncertainty region on the left has the **potential** to
 yield an even better reward. We need a mechanism to 
 
+<MdxImage 
+    filePath='bayesian-beamng/bayesopt_demo_acq.png'
+    alt="Gaussian process and acquisition function for 5 sample parameter values"
+    maxWidth="902px"
+    originalWidth={902}
+    originalHeight={525}
+/>
+
 Before we can measure anything, we need a simulation environment. You may have heard of the
 impressively-realistic vehicle physics simulator, BeamNG.drive. You may not be familiar with its
 research-oriented fork, BeamNG.tech. It comes with a host of neat features that make experimentation easier,
 but the one that will come in handy today is the Python API, BeamNGpy. Props to the developers for
 rescuing me from having to hack together LUA scripts.
-
-<MdxVideo
-    filePath='bayesian-beamng/video.mp4'
-    alt="bng video test"
-    maxWidth="1458px"
-    originalWidth={1458}
-    originalHeight={802}
-    muted={true}
-/>
