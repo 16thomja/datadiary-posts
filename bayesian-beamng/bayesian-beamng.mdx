@@ -73,15 +73,18 @@ in regions where there is little information upon which to extrapolate. In this 
 **Scaled RBF kernel**:
 
 $$
-k(x_i, x_j) = \sigma^2 \cdot \exp\left(- \frac_{x_i-x_j^2}{2 l^2}\right)
+k(x_i, x_j) = \frac{x_i - x_j}{2}
 $$
 
-If you'd like to learn exactly how this kernel defines the shape of the GP, I encourage you to visit the paper
+If you'd like to learn exactly how a kernel can define the shape of a GP, I encourage you to visit the paper
 that inspired this article.
 
 Now, we have to decide where to conduct our next trial based on the surrogate. It predicts a low-uncertainty
-peak near the rightmost observation. However, the high-uncertainty region on the left has the potential to
-yield an even better reward. We need a mechanism to 
+peak near the rightmost observation. However, it appears that the high-uncertainty region on the left 
+has the potential to yield an even better reward. We need a mechanism that can incorporate both of these 
+considerations to estimate the improvement we can expect to observe at any given point in the domain. This
+is where an **acquisition function** can help. Here, I've chosen to implement the aptly-named
+**Expected Improvement** function:
 
 <MdxImage 
     filePath='bayesian-beamng/bayesopt_demo_acq.png'
