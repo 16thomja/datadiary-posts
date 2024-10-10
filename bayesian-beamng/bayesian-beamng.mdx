@@ -55,7 +55,7 @@ Let's say we've already conducted 5 trials and plotted the reward values:
 
 Where should we conduct the next trial? We're blind to the function that generated these points. However, we can
 try to estimate the shape of the function in a manner that leverages the information we've gathered. This is
-where we apply the **surrogate function**:
+where we apply a **surrogate function**:
 
 <MdxImage 
     filePath='bayesian-beamng/bayesopt_demo_gp.png'
@@ -67,12 +67,20 @@ where we apply the **surrogate function**:
 
 This "function" is actually a **Gaussian Process** - a distribution over infinitely many functions. It's
 characterized by its mean (solid line) and covariance (transparent envelope). Notice how its mean passes
-directly through our observations and how its envelope grows as it enters uncharted territory. It
-essentially says: "We know, with very little uncertainty, the shape of the true function near the observed points.
-Beyond that, we apply a broad guess".
+directly through our observations and how its envelope grows as it steers through uncharted territory. This
+reflects our confidence in the estimation of the true function near the observations and our uncertainty
+in regions where there is little information upon which to extrapolate. In this example, I've defined it with the 
+**Scaled RBF kernel**:
+
+$$ 
+k(x_i, x_j) = \sigma^2 \cdot \exp\left(- \frac{||x_i - x_j||^2}{2 l^2}\right)
+$$
+
+If you'd like to learn exactly how this kernel defines the shape of the GP, I encourage you to visit the paper
+that inspired this article.
 
 Now, we have to decide where to conduct our next trial based on the surrogate. It predicts a low-uncertainty
-peak near the rightmost observation. However, the high-uncertainty region on the left has the **potential** to
+peak near the rightmost observation. However, the high-uncertainty region on the left has the potential to
 yield an even better reward. We need a mechanism to 
 
 <MdxImage 
