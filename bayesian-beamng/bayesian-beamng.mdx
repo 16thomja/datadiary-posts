@@ -18,10 +18,11 @@ the following control network:
     title="Trajectory-following policy"
 />
 
-You can see how, at any given time, the car's throttle and steering are goverened by 3 measurements:
+You can see how, at any given time, the car's throttle and steering are goverened by 4 measurements:
 
 1. The lateral distance between the car and the road, $Y_{err}$
 2. The angle between the car's heading and the the road direction, $\Omega_{err}$
+3. The difference between the desired speed of the car and the current speed, $V_{err}$
 3. The lateral velocity of the car relative to its own heading (a.k.a. "drift"), $V_y$
 
 These are filtered through a total of **15** weights (in combination with summation and tanh squashing) to
@@ -66,7 +67,7 @@ where we apply a **surrogate function**:
 />
 
 This "function" is actually a **Gaussian Process** - a distribution over infinitely many functions. It's
-characterized by its mean (solid line) and covariance (transparent envelope). Notice how its mean passes
+characterized by its mean (solid line) and uncertainty (transparent envelope). Notice how its mean passes
 directly through our observations and how its envelope grows as it steers through uncharted territory. This
 reflects our confidence in the estimation of the true function near the observations and our uncertainty
 in regions where there is little information upon which to extrapolate. In this example, I've defined it with the 
@@ -77,8 +78,8 @@ that inspired this article.
 
 Now, we have to decide where to conduct our next trial based on the surrogate. It predicts a low-uncertainty
 peak near the rightmost observation. However, it appears that the high-uncertainty region on the left 
-has the potential to yield an even better reward. We need a mechanism that can incorporate both of these 
-considerations to estimate the improvement we can expect to observe at any given point in the domain. This
+has the potential to yield an even greater reward. We need a mechanism that can incorporate both of these 
+considerations to estimate the improvement we can expect to observe at any point in the domain. This
 is where an **acquisition function** can help. Here, I've chosen to implement the aptly-named
 **Expected Improvement** function:
 
@@ -90,8 +91,43 @@ is where an **acquisition function** can help. Here, I've chosen to implement th
     originalHeight={525}
 />
 
-Before we can measure anything, we need a simulation environment. You may have heard of the
-impressively-realistic vehicle physics simulator, BeamNG.drive. You may not be familiar with its
-research-oriented fork, BeamNG.tech. It comes with a host of neat features that make experimentation easier,
-but the one that will come in handy today is the Python API, BeamNGpy. Props to the developers for
-rescuing me from having to hack together LUA scripts.
+You'll notice that this expression is a sum of two terms. The first is the **Exploitation Term**. It says:
+"look for points where the mean of the GP is greater than the best observation with little uncertainty". This
+is the main contribution to the peak on the right. The second term is the **Exploration Term**. It says:
+"look for points where large uncertainty permits a high probability of exceeding the best observation". This
+drives the peak on the left. Also, note the tradeoff parameter, $\gamma$. This allows us to adjust the balance
+of the terms to create a more/less adventurous optimizer.
+
+My choice of $\gamma$ has resulted in a peak around $x=3$, so this is where we would conduct the next trial
+and redo this process with 6 observations.
+
+### Configuring the Simulation
+
+In order to conduct optimization, we need to simulate a car. You may have heard of the
+impressively-realistic vehicle physics simulator, [BeamNG.drive](https://www.beamng.com/game/). You may not 
+be familiar with its research-oriented fork, [BeamNG.tech](https://beamng.tech). It comes with a host of neat 
+features that make experimentation easier, but the one that will come in handy today is the Python API, 
+BeamNGpy. Props to the developers for rescuing me from having to hack together LUA scripts.
+
+[INSERT BEAMNG.TECH VISUAL]
+
+Let's go over the general plan. BeamNG allows us to poll the position, velocity, and orientation of the car
+as 3D Cartesian vectors (though we will discard $\hat{z}). There is an implicit global origin and fixed basis. 
+We need to transform these into the 4 measurements that will feed into our control network. Two of the 
+transformations are straightforward:
+
+* $V_{err}$: Subtract the magnitude of the velocity vector from the desired speed.
+* $V_y$ (a.k.a. "drift"): Project the velocity vector onto the lateral component of the orientation vector.
+
+$Y_{err}$ and $\Omega_{err}$ are a bit more complicated. I propose the following construct to streamline
+their measurement: a sliding origin, $A$.
+
+[INSERT SLIDING ORIGIN IMAGE]
+
+$A$ will be constrained to the U-turn's line of symmetry. It will follow the car up along $\hat{y}$, stop at
+the center of the U-turn, then follow the car back down the final straight. This gives us a vector between the 
+origin and the car, $\vec{AC}$, that facilitates the final 2 measurements:
+
+* $Y_{err}$: Subtract the radius of the curve from $|\vec{AC}|$.
+* $\Omega_{err}$: Rotate $\vec{AC}$ $\pi/2$ clockwise to get the car's *ideal* heading. Calculate the angle
+between the car's orientation and the ideal heading.
