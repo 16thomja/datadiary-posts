@@ -116,18 +116,18 @@ as 3D Cartesian vectors (though we will discard $\hat{z}$). There is an implicit
 We need to transform these into the 4 measurements that will feed into our control network. Two of the 
 transformations are straightforward:
 
-* $V_{err}$: Subtract the magnitude of the velocity vector from the desired speed.
-* $V_y$ (a.k.a. "drift"): Project the velocity vector onto the lateral component of the orientation vector.
+* $V_{err}$ : Subtract the magnitude of the velocity vector from the desired speed.
+* $V_y$ (a.k.a. "drift") : Project the velocity vector onto the lateral component of the orientation vector.
 
-$Y_{err}$ and $\Omega_{err}$ are a bit more complicated. I propose the following construct to streamline
-their measurement: a sliding origin, $A$.
+$Y_{err}$ and $\Omega_{err}$ are a bit more complicated. I propose a sliding origin, $O$, to streamline their
+measurement.
 
 [INSERT SLIDING ORIGIN IMAGE]
 
-$A$ will be constrained to the U-turn's line of symmetry. It will follow the car up along $\hat{y}$, stop at
+$O$ will be constrained to the U-turn's line of symmetry. It will follow the car up along $\hat{y}$, stop at
 the center of the U-turn, then follow the car back down the final straight. This gives us a vector between the 
-origin and the car, $\vec{AC}$, that facilitates the final 2 measurements:
+origin and the car, $\vec{OC}$, that facilitates the final 2 measurements:
 
-* $Y_{err}$: Subtract the radius of the curve from $|\vec{AC}|$.
-* $\Omega_{err}$: Rotate $\vec{AC}$ $\pi/2$ clockwise to get the car's *ideal* heading. Calculate the angle
+* $Y_{err}$ : Subtract the radius of the curve from $|\vec{OC}|$.
+* $\Omega_{err}$ : Rotate $\vec{OC}$ $\frac{\pi}{2}$ clockwise to get the car's *ideal* heading. Calculate the angle
 between the car's orientation and the ideal heading.
