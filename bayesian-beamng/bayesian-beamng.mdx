@@ -126,7 +126,7 @@ derivation:
 
 $O$ will be constrained to the U-turn's line of symmetry. It will track the car's vertical position up to 
 the start of the U-turn, pause, then follow the car back down the final straight. We can draw a vector between 
-the origin and the car, $\vec{OC}$. This vector will be the basis for the following location-agnostic logic
+this origin and the car, $\vec{OC}$. This vector will be the basis for the following location-agnostic logic
 for deriving the final 2 quantities:
 
 * $Y_{err}$ : Subtract the radius of the U-turn from $|\vec{OC}|$.
@@ -139,16 +139,19 @@ actions":
 
 [INSERT REWARD EQUATION]
 
-We will simply append these quantities to a list at each timestep, performing the normalization and summation
-at the end of a run.
+We will simply calculate these quantities at each timestep, append them to a list, and perform the normalization 
+and summation at the end of a run.
 
-Finally, a note on what will constitute one 'trial'. The authors recommend starting the car at various 
-orientations for a robust evaluation of a given set of weights. The reward for each trial will be an
-average over 10 episodes, with each episode slightly modifying the car's starting angle.
+Finally, it's important to clarify what constitutes a 'trial'. Each trial will consist of 10 episodes, where the 
+car is started at different orientations to robustly evaluate a given set of weights. The reward for each trial 
+will be an average over these 10 episodes, with each episode modifying the car's starting angle slightly.
 
-Here's an outline of the optimization loop:
+The first 30 trials will use random weights to give the surrogate function a solid introduction to the search
+space. Following this, 100 real optimization trials will be conducted.
 
-```python title="pseudocode"
+Here's an outline of the code with some of the details abstracted as blackbox functions:
+
+```python title="python"
 num_episodes_per_trial = 10
 episode_duration = 25 # s
 dt = 0.25 # s
@@ -176,4 +179,10 @@ def simulation_trial(weights):
         rewards.append(reward)
 
     return mean(rewards)
+
+optimizer = BayesianOptimization(f = simulation_trial)
+optimizer.maximize(init_points = 30, n_iter = 100)
 ```
+
+### Results
+
