@@ -113,21 +113,67 @@ BeamNGpy. Props to the developers for rescuing me from having to hack together L
 
 Let's go over the general plan. BeamNG allows us to poll the position, velocity, and orientation of the car
 as 3D Cartesian vectors (though we will discard $\hat{z}$). There is an implicit global origin and fixed basis. 
-We need to transform these into the 4 measurements that will feed into our control network. Two of the 
-transformations are straightforward:
+We need to transform these into the 4 quantities that will feed into our control network. Two of the 
+derivations are straightforward:
 
 * $V_{err}$ : Subtract the magnitude of the velocity vector from the desired speed.
 * $V_y$ (a.k.a. "drift") : Project the velocity vector onto the lateral component of the orientation vector.
 
 $Y_{err}$ and $\Omega_{err}$ are a bit more complicated. I propose a sliding origin, $O$, to streamline their
-measurement.
+derivation:
 
 [INSERT SLIDING ORIGIN IMAGE]
 
-$O$ will be constrained to the U-turn's line of symmetry. It will follow the car up along $\hat{y}$, stop at
-the center of the U-turn, then follow the car back down the final straight. This gives us a vector between the 
-origin and the car, $\vec{OC}$, that facilitates the final 2 measurements:
+$O$ will be constrained to the U-turn's line of symmetry. It will track the car's vertical position up to 
+the start of the U-turn, pause, then follow the car back down the final straight. We can draw a vector between 
+the origin and the car, $\vec{OC}$. This vector will be the basis for the following location-agnostic logic
+for deriving the final 2 quantities:
 
-* $Y_{err}$ : Subtract the radius of the curve from $|\vec{OC}|$.
-* $\Omega_{err}$ : Rotate $\vec{OC}$ $\frac{\pi}{2}$ clockwise to get the car's *ideal* heading. Calculate the angle
-between the car's orientation and the ideal heading.
+* $Y_{err}$ : Subtract the radius of the U-turn from $|\vec{OC}|$.
+* $\Omega_{err}$ : Rotate $\vec{OC}$ $\frac{\pi}{2}$ clockwise to get the car's **target** heading. Calculate the 
+angle between the car's orientation and the target heading.
+
+Now, onto the reward function. The authors propose a "negative weighted sum of normalized squared error values 
+between the vehicle and the desired trajectory, including **a = [steer, throttle]** to penalize for abrupt 
+actions":
+
+[INSERT REWARD EQUATION]
+
+We will simply append these quantities to a list at each timestep, performing the normalization and summation
+at the end of a run.
+
+Finally, a note on what will constitute one 'trial'. The authors recommend starting the car at various 
+orientations for a robust evaluation of a given set of weights. The reward for each trial will be an
+average over 10 episodes, with each episode slightly modifying the car's starting angle.
+
+Here's an outline of the optimization loop:
+
+```python title="pseudocode"
+num_episodes_per_trial = 10
+episode_duration = 25 # s
+dt = 0.25 # s
+target_speed = 16 # m/s
+starting_angle = 140 # deg
+
+def simulation_trial(weights):
+    rewards = []
+    for episode in range(num_episodes_per_trial):
+        angle = starting_angle - (10 * episode)
+        instantiate_vehicle(angle)
+        
+        quantities_list = []
+        t = 0
+        while t <= episode_duration:
+            measurements = poll_vehicle_sensors()
+            Y_err, V_err, V_y, Omega_err = derive_quantities(measurements)
+            steer, throttle = vehicle_control_network(weights, Y_err, V_err, V_y, Omega_err)
+            control_vehicle(steer, throttle)
+            quantities_list.append([Y_err, V_err, V_y, Omega_err, steer, throttle])
+
+            t += dt
+        
+        reward = weighted_normalized_squared_sum(quantities_list)
+        rewards.append(reward)
+
+    return mean(rewards)
+```
