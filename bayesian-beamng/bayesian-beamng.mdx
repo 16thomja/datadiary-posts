@@ -119,10 +119,16 @@ derivations are straightforward:
 * $V_{err}$ : Subtract the magnitude of the velocity vector from the desired speed.
 * $V_y$ (a.k.a. "drift") : Project the velocity vector onto the lateral component of the orientation vector.
 
-$Y_{err}$ and $\Omega_{err}$ are a bit more complicated. I propose a sliding origin, $O$, to streamline their
-derivation:
+$Y_{err}$ and $\Omega_{err}$ are a bit more complicated. We need to account for the non-uniform geometry of the
+U-turn. I propose a sliding origin, $O$, to streamline their derivation:
 
-[INSERT SLIDING ORIGIN IMAGE]
+<MdxImage 
+    filePath='bayesian-beamng/sliding_origin.jpg'
+    alt="Sliding origin geometry diagram"
+    maxWidth="650px"
+    originalWidth={1580}
+    originalHeight={1535}
+/>
 
 $O$ will be constrained to the U-turn's line of symmetry. It will track the car's vertical position up to 
 the start of the U-turn, pause, then follow the car back down the final straight. We can draw a vector between 
@@ -152,11 +158,31 @@ space. Following this, 100 real optimization trials will be conducted.
 Here's an outline of the code with some of the details abstracted as blackbox functions:
 
 ```python title="python"
+num_random_trials = 30
+num_trials = 100
 num_episodes_per_trial = 10
 episode_duration = 25 # s
 dt = 0.25 # s
 target_speed = 16 # m/s
 starting_angle = 140 # deg
+
+def vehicle_control_network(weights, Y_err, V_err, V_y, Omega_err):
+    steer = tanh(weights[8] * (
+        weights[0] +
+        weights[6] * (tanh(weights[1] * Y_err)) +
+        weights[2] * Y_err +
+        weights[3] * V_y +
+        weights[4] * Omega_err +
+        weights[7] * (tanh(weights[5] * Omega_err))
+    ))
+    throttle = tanh(weights[14] * (
+        weights[9] +
+        weights[10] * abs(Omega_err) +
+        weights[11] * V_err +
+        weights[13] * (tanh(weights[12] * V_err))
+    ))
+
+    return steer, throttle
 
 def simulation_trial(weights):
     rewards = []
@@ -181,8 +207,32 @@ def simulation_trial(weights):
     return mean(rewards)
 
 optimizer = BayesianOptimization(f = simulation_trial)
-optimizer.maximize(init_points = 30, n_iter = 100)
+optimizer.maximize(init_points = num_random_trials, n_iter = num_trials)
 ```
+
+You can view the real code [here](https://github.com/16thomja/my-data-blog-posts/blob/main/bayesian-beamng/code/uturn_optimize.py).
 
 ### Results
 
+After roughly 12 hours, all 130 trials are complete. Let's have a look at the progression of the reward:
+
+<MdxImage 
+    filePath='bayesian-beamng/reward_vs_trial.png'
+    alt="Line plot of reward vs trial"
+    maxWidth="750px"
+    originalWidth={1724}
+    originalHeight={1050}
+/>
+
+Quite unstable. Curiously, we see a jump in performance around the 70 trial mark. I anticipated consistent 
+improvement after the first 30 trials. Let's visualize the actual trajectories of the car at some points
+on this curve:
+
+<MdxVideo
+    filePath='bayesian-beamng/trial_trajectories.mp4'
+    alt="Animations of car trajectories at select trials"
+    maxWidth="3600px"
+    originalWidth={3600}
+    originalHeight={2400}
+    muted={true}
+/>
