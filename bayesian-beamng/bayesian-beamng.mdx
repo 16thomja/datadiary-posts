@@ -131,7 +131,7 @@ U-turn. I propose a sliding origin, $O$, to streamline their derivation:
 />
 
 $O$ will be constrained to the U-turn's line of symmetry. It will track the car's vertical position up to 
-the start of the U-turn, pause, then follow the car back down the final straight. We can draw a vector between 
+the start of the U-turn, halt, then follow the car back down the final straight. We can draw a vector between 
 this origin and the car, $\vec{OC}$. This vector will be the basis for the following location-agnostic logic
 for deriving the final 2 quantities:
 
@@ -153,7 +153,7 @@ car is started at different orientations to robustly evaluate a given set of wei
 will be an average over these 10 episodes, with each episode modifying the car's starting angle slightly.
 
 The first 30 trials will use random weights to give the surrogate function a solid introduction to the search
-space. Following this, 100 real optimization trials will be conducted.
+space. After this, 100 real optimization trials will be conducted.
 
 Here's an outline of the code with some of the details abstracted as blackbox functions:
 
@@ -234,5 +234,17 @@ on this curve:
     maxWidth="3600px"
     originalWidth={3600}
     originalHeight={2400}
+    muted={true}
+/>
+
+A higher reward certainly seems to correspond to closer adherence to the track, though I suspect there's
+performance being left on the table. Let's configure the car with the best set of weights and observe:
+
+<MdxVideo
+    filePath='bayesian-beamng/beamng_footage_trial124.mp4'
+    alt="BeamNG simulation of car with best weights"
+    maxWidth="1320px"
+    originalWidth={1320}
+    originalHeight={882}
     muted={true}
 />
