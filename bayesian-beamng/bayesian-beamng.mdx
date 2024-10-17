@@ -95,6 +95,20 @@ is where an **acquisition function** can help. Here, I've chosen to implement th
     originalHeight={525}
 />
 
+```math
+\text{EI}(x) = \left( \mu(x) - f(x^+) - \xi \right) \Phi\left( \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)} \right) + \sigma(x) \phi\left( \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)} \right)
+
+\begin{itemize}
+    \item Where:
+    \item \( \mu(x) \) is the predicted mean at point \( x \),
+    \item \( f(x^+) \) is the best observed value so far,
+    \item \( \sigma(x) \) is the predicted standard deviation at point \( x \),
+    \item \( \Phi \) is the cumulative distribution function (CDF) of the standard normal distribution,
+    \item \( \phi \) is the probability density function (PDF) of the standard normal distribution,
+    \item \( \xi \) is the exploration-exploitation trade-off parameter.
+\end{itemize}
+```
+
 You'll notice that this expression is a sum of two terms. The first is the **Exploitation Term**. It says:
 "look for points where the mean of the GP is greater than the best observation with little uncertainty". This
 is the main contribution to the peak on the right. The second term is the **Exploration Term**. It says:
@@ -147,7 +161,9 @@ Now, onto the reward function. The authors propose a "negative weighted sum of n
 between the vehicle and the desired trajectory, including **a = [steer, throttle]** to penalize for abrupt 
 actions":
 
-[INSERT REWARD EQUATION]
+```math
+R = -\sum_{t} \left[ 1 \times \tilde{Y}_{\text{err}}^2 + 0.8 \times \tilde{V}_{\text{err}}^2 + 1 \times \tilde{\Omega}_{\text{err}}^2 + 0.7 \times \mathbf{\tilde{a}}' \mathbf{\tilde{a}} \right]
+```
 
 We will simply calculate these quantities at each timestep, append them to a list, and perform the normalization 
 and summation at the end of a run.
