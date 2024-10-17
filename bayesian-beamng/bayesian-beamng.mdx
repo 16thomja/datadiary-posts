@@ -96,27 +96,26 @@ is where an **acquisition function** can help. Here, I've chosen to implement th
 />
 
 ```math
-\text{EI}(x) = \left( \mu(x) - f(x^+) - \xi \right) \Phi\left( \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)} \right) + \sigma(x) \phi\left( \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)} \right)
-
-\begin{itemize}
-    \item Where:
-    \item \( \mu(x) \) is the predicted mean at point \( x \),
-    \item \( f(x^+) \) is the best observed value so far,
-    \item \( \sigma(x) \) is the predicted standard deviation at point \( x \),
-    \item \( \Phi \) is the cumulative distribution function (CDF) of the standard normal distribution,
-    \item \( \phi \) is the probability density function (PDF) of the standard normal distribution,
-    \item \( \xi \) is the exploration-exploitation trade-off parameter.
-\end{itemize}
+\text{EI}(x) = \left( \mu(x) - f(x^+) - \xi \right) \Phi(Z) + \sigma(x) \phi(Z)
 ```
+
+Where:
+* $\mu(x)$ is the mean of the Gaussian process at point $x$
+* $f(x^+)$ is the best observed value so far
+* $\sigma(x)$ is the standard deviation at point x
+* $Z = \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)}$
+* $\Phi(Z)$ is the CDF of the standard normal distribution
+* $\phi(Z)$ is the PDF of the standard normal distribution
+* $\xi$ is the exploration-exploitation tradeoff parameter
 
 You'll notice that this expression is a sum of two terms. The first is the **Exploitation Term**. It says:
 "look for points where the mean of the GP is greater than the best observation with little uncertainty". This
 is the main contribution to the peak on the right. The second term is the **Exploration Term**. It says:
 "look for points where large uncertainty permits a high probability of exceeding the best observation". This
-drives the peak on the left. Also, note the tradeoff parameter, $\gamma$. This allows us to adjust the balance
+drives the peak on the left. Also, note the tradeoff parameter, $\xi$. This allows us to adjust the balance
 of the terms to create a more/less adventurous optimizer.
 
-My choice of $\gamma$ has resulted in a peak around $x=3$, so this is where we would conduct the next trial
+My choice of $\xi$ has resulted in a peak around $x=3$, so this is where we would conduct the next trial
 and redo this process with 6 observations.
 
 ### Configuring the Simulation
