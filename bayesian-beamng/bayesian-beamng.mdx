@@ -100,17 +100,17 @@ is where an **acquisition function** can help. Here, I've chosen to implement th
 ```
 
 Where:
-* $\mu(x)$ is the mean of the Gaussian process at point $x$
+* $\mu(x)$ is the mean of the GP at point $x$
 * $f(x^+)$ is the best observed value so far
-* $\sigma(x)$ is the standard deviation at point x
+* $\sigma(x)$ is the standard deviation at point $x$
 * $Z = \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)}$
 * $\Phi(Z)$ is the CDF of the standard normal distribution
 * $\phi(Z)$ is the PDF of the standard normal distribution
-* $\xi$ is the exploration-exploitation tradeoff parameter
+* $\xi$ is an exploration-exploitation tradeoff parameter
 
-You'll notice that this expression is a sum of two terms. The first is the **Exploitation Term**. It says:
+You'll notice that this expression is a sum of two terms. The first is the **exploitation term**. It says:
 "look for points where the mean of the GP is greater than the best observation with little uncertainty". This
-is the main contribution to the peak on the right. The second term is the **Exploration Term**. It says:
+is the main contribution to the peak on the right. The second term is the **exploration term**. It says:
 "look for points where large uncertainty permits a high probability of exceeding the best observation". This
 drives the peak on the left. Also, note the tradeoff parameter, $\xi$. This allows us to adjust the balance
 of the terms to create a more/less adventurous optimizer.
@@ -256,8 +256,8 @@ on this curve:
     muted={true}
 />
 
-A higher reward certainly seems to correspond to closer adherence to the track, though I suspect there's
-performance being left on the table. Let's configure the car with the best set of weights and observe:
+A higher reward certainly seems to correspond to closer adherence to the track, but even the best trial
+shows persistent lateral deviation. Let's configure the car with the best set of weights and observe:
 
 <MdxVideo
     filePath='bayesian-beamng/beamng_footage_trial124.mp4'
