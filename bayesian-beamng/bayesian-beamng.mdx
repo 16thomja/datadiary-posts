@@ -101,11 +101,11 @@ is where an **acquisition function** can help. Here, I've chosen to implement th
 
 Where:
 * $\mu(x)$ is the mean of the GP at point $x$
-* $f(x^+)$ is the best observed value so far
+* $f(x^+)$ is the best reward value so far
 * $\sigma(x)$ is the standard deviation at point $x$
 * $Z = \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)}$
-* $\Phi(Z)$ is the CDF of the standard normal distribution
-* $\phi(Z)$ is the PDF of the standard normal distribution
+* $\Phi$ is the CDF of the standard normal distribution
+* $\phi$ is the PDF of the standard normal distribution
 * $\xi$ is an exploration-exploitation tradeoff parameter
 
 You'll notice that this expression is a sum of two terms. The first is the **exploitation term**. It says:
@@ -126,12 +126,18 @@ be familiar with its research-oriented fork, [BeamNG.tech](https://beamng.tech).
 features that make experimentation easier, but the one that will come in handy today is the Python API, 
 BeamNGpy. Props to the developers for rescuing me from having to hack together LUA scripts.
 
-[INSERT BEAMNG.TECH VISUAL]
+<MdxImage 
+    filePath='bayesian-beamng/beamngpy_screenshot.png'
+    alt="Screenshot of code alongside BeamNG.tech simulation"
+    maxWidth="3732px"
+    originalWidth={3732}
+    originalHeight={2156}
+/>
 
 Let's go over the general plan. BeamNG allows us to poll the position, velocity, and orientation of the car
 as 3D Cartesian vectors (though we will discard $\hat{z}$). There is an implicit global origin and fixed basis. 
-We need to transform these into the 4 quantities that will feed into our control network. Two of the 
-derivations are straightforward:
+We need to leverage these vectors to calculate the 4 quantities that will feed into our control network. Two of
+the derivations are straightforward:
 
 * $V_{err}$ : Subtract the magnitude of the velocity vector from the desired speed.
 * $V_y$ (a.k.a. "drift") : Project the velocity vector onto the lateral component of the orientation vector.
@@ -156,7 +162,14 @@ for deriving the final 2 quantities:
 * $\Omega_{err}$ : Rotate $\vec{OC}$ $\frac{\pi}{2}$ clockwise to get the car's **target** heading. Calculate the 
 angle between the car's orientation and the target heading.
 
-Now, onto the reward function. The authors propose a "negative weighted sum of normalized squared error values 
+Now that we've figured out the measurements, it's important to clarify the structure of a 'trial'. Each trial
+will be a series of 10 episodes, where each episode starts the car at a slightly different angle. A variety of
+starting orientations ensures a robust evaluation of a given set of weights. Each trial will last 25 seconds,
+with a new measurement taken every quarter of a second. We will run 30 initial trials with random weights to
+give the surrogate function a solid introduction to the search space. We will then run 100 trials with the
+optimization loop described above.
+
+Finally, we need a reward function. The authors propose a "negative weighted sum of normalized squared error values 
 between the vehicle and the desired trajectory, including **a = [steer, throttle]** to penalize for abrupt 
 actions":
 
@@ -165,14 +178,7 @@ R = -\sum_{t} \left[ 1 \times \tilde{Y}_{\text{err}}^2 + 0.8 \times \tilde{V}_{\
 ```
 
 We will simply calculate these quantities at each timestep, append them to a list, and perform the normalization 
-and summation at the end of a run.
-
-Finally, it's important to clarify what constitutes a 'trial'. Each trial will consist of 10 episodes, where the 
-car is started at different orientations to robustly evaluate a given set of weights. The reward for each trial 
-will be an average over these 10 episodes, with each episode modifying the car's starting angle slightly.
-
-The first 30 trials will use random weights to give the surrogate function a solid introduction to the search
-space. After this, 100 real optimization trials will be conducted.
+and summation at the end of an episode.
 
 Here's an outline of the code with some of the details abstracted as blackbox functions:
 
@@ -267,3 +273,20 @@ shows persistent lateral deviation. Let's configure the car with the best set of
     originalHeight={882}
     muted={true}
 />
+
+It appears that the car is properly incentivized to maintain the correct speed and orientation, but is
+never quite centered on the road.
+
+We're on the right track (figuratively, if not literally) and I think we could improve by exploring the
+following ideas:
+
+1. **Tweaking the exploration-exploitation tradeoff parameter, $\xi$.** The unstable improvement might be
+attributable to an over-emphasis on exploration.
+2. **Revising our normalization strategy.** You'll recall that the reward function required a sum over
+**normalized** errors, where normalization entails shrinking a distribution of errors to range (-1, 1).
+The issue is that the maximum $Y_{err}$ can be massive. There's a choice to be made in preventing large
+errors from dominating the influence of small errors on the reward signal. I chose to cap the $Y_{err}$ 
+at the distance equivalent to the radius of the U-turn, but a more sophisticated strategy might yield better
+results.
+
+I may give these a try in a follow-up post, so be on the lookout!
