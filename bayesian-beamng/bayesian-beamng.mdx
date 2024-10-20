@@ -164,7 +164,7 @@ angle between the car's orientation and the target heading.
 
 Now that we've figured out the measurements, it's important to clarify the structure of a 'trial'. Each trial
 will be a series of 10 episodes, where each episode starts the car at a slightly different angle. A variety of
-starting orientations ensures a robust evaluation of a given set of weights. Each trial will last 25 seconds,
+starting orientations ensures a robust evaluation of a given set of weights. Each episode will last 25 seconds,
 with a new measurement taken every quarter of a second. We will run 30 initial trials with random weights to
 give the surrogate function a solid introduction to the search space. We will then run 100 trials with the
 optimization loop described above.
