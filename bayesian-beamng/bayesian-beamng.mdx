@@ -103,10 +103,10 @@ Where:
 * $\mu(x)$ is the mean of the GP at point $x$
 * $f(x^+)$ is the best reward value so far
 * $\sigma(x)$ is the standard deviation at point $x$
+* $\xi$ is an exploration-exploitation tradeoff parameter
 * $Z = \frac{\mu(x) - f(x^+) - \xi}{\sigma(x)}$
 * $\Phi$ is the CDF of the standard normal distribution
 * $\phi$ is the PDF of the standard normal distribution
-* $\xi$ is an exploration-exploitation tradeoff parameter
 
 You'll notice that this expression is a sum of two terms. The first is the **exploitation term**. It says:
 "look for points where the mean of the GP is greater than the best observation with little uncertainty". This
@@ -135,12 +135,12 @@ BeamNGpy. Props to the developers for rescuing me from having to hack together L
 />
 
 Let's go over the general plan. BeamNG allows us to poll the position, velocity, and orientation of the car
-as 3D Cartesian vectors (though we will discard $\hat{z}$). There is an implicit global origin and fixed basis. 
-We need to leverage these vectors to calculate the 4 quantities that will feed into our control network. Two of
+as 3D Cartesian vectors (though we will discard $\hat{z}$). These are based on an implicit global origin and fixed
+basis. We need to leverage these vectors to calculate the 4 quantities that will feed into our control network. Two of
 the derivations are straightforward:
 
 * $V_{err}$ : Subtract the magnitude of the velocity vector from the desired speed.
-* $V_y$ (a.k.a. "drift") : Project the velocity vector onto the lateral component of the orientation vector.
+* $V_y$ (a.k.a. "drift") : Project the velocity vector onto the line perpendicular to the orientation vector.
 
 $Y_{err}$ and $\Omega_{err}$ are a bit more complicated. We need to account for the non-uniform geometry of the
 U-turn. I propose a sliding origin, $O$, to streamline their derivation:
