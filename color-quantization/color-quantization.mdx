@@ -1,7 +1,7 @@
 ---
-title: 'Color Quantization'
-date: '2024-05-20'
-tags: ['clustering']
+title: "Color Quantization"
+date: "2024-05-20"
+tags: ["clustering"]
 ---
 
 To inaugurate this blog, I'd like to present a simple article involving a topic I've spent
@@ -11,14 +11,14 @@ I've included in this site.
 
 Let's inspect the following image:
 
-<MdxImage 
-    filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg'
-    alt="Brachyscome iberidifolia"
-    maxWidth="1000px"
-    originalWidth={1000}
-    originalHeight={665}
-    attributionId={1}
-    title="Brachyscome iberidifolia"
+<MdxImage
+  filePath="color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg"
+  alt="Brachyscome iberidifolia"
+  maxWidth="1000px"
+  originalWidth={1000}
+  originalHeight={665}
+  attributionId={1}
+  title="Brachyscome iberidifolia"
 />
 
 If you were asked to list the prominent colors in this image, how would you respond?
@@ -79,7 +79,7 @@ of prominent representative colors.
 
 How can we algorithmically identify the most faithful representatives of our color
 space? A simple solution is **K-Means clustering**. We start by choosing the
-number of colors to appear in our compressed image, *n*. We randomly cast out *n* points,
+number of colors to appear in our compressed image, _n_. We randomly cast out _n_ points,
 called **centroids**, into the color space. Then, we repeatedly run the following two steps to guide
 the centroids to popular pockets of the space:
 
@@ -88,14 +88,14 @@ the centroids to popular pockets of the space:
 
 The animation below shows three centroids gravitating to three natural clusters with this simple logic:
 
-<MdxImage 
-    filePath='color-quantization/K-means_convergence.gif'
-    alt="K-means convergence animation with 3 centroids"
-    maxWidth="637px"
-    originalWidth={637}
-    originalHeight={619}
-    attributionId={2}
-    title="K-means convergence"
+<MdxImage
+  filePath="color-quantization/K-means_convergence.gif"
+  alt="K-means convergence animation with 3 centroids"
+  maxWidth="637px"
+  originalWidth={637}
+  originalHeight={619}
+  attributionId={2}
+  title="K-means convergence"
 />
 
 Let's give this a try on our image. We configure K-Means with 3 centroids and iterate until convergence.
@@ -135,12 +135,12 @@ quantized_image = Image.fromarray(quantized_image_array.astype('uint8'), 'RGB')
 quantized_image.save('Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png', 'PNG')
 ```
 
-<MdxImage 
-    filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png'
-    alt="Brachyscome iberidifolia after K-means quantization with 3 centroids"
-    maxWidth="1000px"
-    originalWidth={1000}
-    originalHeight={665}
+<MdxImage
+  filePath="color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS3.png"
+  alt="Brachyscome iberidifolia after K-means quantization with 3 centroids"
+  maxWidth="1000px"
+  originalWidth={1000}
+  originalHeight={665}
 />
 
 A pale imitation. What happened here? We can visualize the final positions
@@ -194,7 +194,7 @@ fig.update_layout(
         yaxis=dict(title='G', showspikes=False, range=[0, 255]),
         zaxis=dict(title='B', showspikes=False, range=[0, 255])
     ),
-    scene_aspectmode='manual', 
+    scene_aspectmode='manual',
     scene_aspectratio=dict(x=1, y=1, z=1)
 )
 
@@ -205,42 +205,44 @@ with open('centroids_in_color_space.json', 'w') as outfile:
 Drag to rotate and scroll to zoom. Use the legend on the right to disable the pixel
 markers and reveal the obscured centroids.
 
-<LazyPlot filePath='color-quantization/centroids_in_color_space.json'/>
+<LazyPlot filePath="color-quantization/centroids_in_color_space.json" />
 
 With only 3 centroids, it appears that some regions are left without a close representative.
 Light violet and dark green are well-served, but notice the empty pocket of yellow.
 What if we try again with 10 centroids?
 
-<MdxImage 
-    filePath='color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png'
-    alt="Brachyscome iberidifolia after K-means quantization with 10 centroids"
-    maxWidth="1000px"
-    originalWidth={1000}
-    originalHeight={665}
+<MdxImage
+  filePath="color-quantization/Brachyscome_iberidifolia_Toucan_Tango_2zz_KMEANS10.png"
+  alt="Brachyscome iberidifolia after K-means quantization with 10 centroids"
+  maxWidth="1000px"
+  originalWidth={1000}
+  originalHeight={665}
 />
 
 Much better. Additional centroids will yield diminishing returns, so let's call this a victory.
 
-<ImageAttributionList
-    attributions={[
-        {
-            attributionId: 1,
-            title: "Brachyscome iberidifolia",
-            author: "David Stang",
-            source: "Wikimedia Commons",
-            sourceUrl: "https://commons.wikimedia.org/wiki/File:Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg",
-            license: "CC BY-SA 4.0",
-            licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-            modifications: "Cropped and resized",
-        },
-        {
-            attributionId: 2,
-            title: "K-means convergence",
-            author: "Chire",
-            source: "Wikimedia Commons",
-            sourceUrl: "https://commons.wikimedia.org/wiki/File:K-means_convergence.gif",
-            license: "GNU Free Documentation License",
-            licenseUrl: "https://www.gnu.org/licenses/fdl-1.3.en.html#license-text",
-        },
-    ]}
+<AttributionList
+  attributions={[
+    {
+      attributionId: 1,
+      title: "Brachyscome iberidifolia",
+      author: "David Stang",
+      source: "Wikimedia Commons",
+      sourceUrl:
+        "https://commons.wikimedia.org/wiki/File:Brachyscome_iberidifolia_Toucan_Tango_2zz.jpg",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      modifications: "Cropped and resized",
+    },
+    {
+      attributionId: 2,
+      title: "K-means convergence",
+      author: "Chire",
+      source: "Wikimedia Commons",
+      sourceUrl:
+        "https://commons.wikimedia.org/wiki/File:K-means_convergence.gif",
+      license: "GNU Free Documentation License",
+      licenseUrl: "https://www.gnu.org/licenses/fdl-1.3.en.html#license-text",
+    },
+  ]}
 />
