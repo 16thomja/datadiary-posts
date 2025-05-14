@@ -15,13 +15,14 @@ the following control network:
   maxWidth="600px"
   originalWidth={1844}
   originalHeight={1290}
+  attributionId={1}
   title="Trajectory-following policy"
 />
 
-You can see how, at any given time, the car's throttle and steering are goverened by 4 measurements:
+You can see how, at any given time, the car's throttle and steering are governed by 4 measurements:
 
 1. The lateral distance between the car and the road, $Y_{err}$
-2. The angle between the car's heading and the the road direction, $\Omega_{err}$
+2. The angle between the car's heading and the road direction, $\Omega_{err}$
 3. The difference between the desired speed of the car and the current speed, $V_{err}$
 4. The lateral velocity of the car relative to its own heading (a.k.a. "drift"), $V_y$
 
@@ -291,3 +292,19 @@ following ideas:
    results.
 
 I may give these a try in a follow-up post, so be on the lookout!
+
+<AttributionList
+  attributions={[
+    {
+      attributionId: 1,
+      title:
+        "A Tutorial on Bayesian Optimization of Expensive Cost Functions, with Application to Active User Modeling and Hierarchical Reinforcement Learning",
+      author: "Eric Brochu, Vlad M. Cora & Nando de Freitas",
+      authorUrl: "https://arxiv.org/abs/1012.2599",
+      source: "Haiku Factory PDF mirror",
+      sourceUrl: "https://haikufactory.com/files/bayopt.pdf",
+      license: "All rights reserved",
+      licenseUrl: "https://haikufactory.com/files/bayopt.pdf",
+    },
+  ]}
+/>
